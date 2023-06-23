@@ -91,7 +91,7 @@ public class LogIn extends javax.swing.JFrame {
         jButtonLogin.setText("Se connecter");
         jButtonLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLoginActionPerformed(evt);
+            	jButtonLoginActionPerformed(evt);
             }
         });
 
@@ -238,7 +238,7 @@ public class LogIn extends javax.swing.JFrame {
             dispose();
             
            // Launch home page
-          //new GestionRH_View().setVisible(true);
+          new GestionRH_View().setVisible(true);
                         
         }   
             
