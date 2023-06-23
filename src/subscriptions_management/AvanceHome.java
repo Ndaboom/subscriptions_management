@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -45,8 +47,7 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         try{
 
             java.sql.Statement stmt1=maConnexion.ObtenirConnexion().createStatement();
-            java.sql.ResultSet resultat= stmt1.executeQuery("SELECT code, nom, prenom, sexe, nif, salaire, anposte, "
-                    + " montant, dateavance FROM AVANCE");
+            java.sql.ResultSet resultat= stmt1.executeQuery("SELECT id, personne, libelle, montant, type_pret, date FROM transactions_table");
             jTable1.setModel(DbUtils.resultSetToTableModel(resultat));
 	
 	
@@ -65,6 +66,7 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         setLocation(8,32);
         
         getData();
+        fetchMembers();
         dataStatu= true;
          SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -77,7 +79,7 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
     }
     Statement stmt;
     Connexion maConnexion= new Connexion();
-    String table1_click;
+    String table1_click, person_id;
     
 
     /**
@@ -147,6 +149,15 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         jLNom.setText("MEMBRES");
         
         jCMembres = new JComboBox();
+        jCMembres.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String input = jCMembres.getSelectedItem().toString();
+				String[] parts = input.split(" ");
+				person_id = parts[0];
+			}
+        });
         jCMembres.setEditable(false);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -193,6 +204,16 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         
         jCLibelle = new JComboBox();
         jCLibelle.setModel(new DefaultComboBoxModel(new String[] {"Crédit", "Débit"}));
+        jCLibelle.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(jCLibelle.getSelectedItem().toString() == "Débit") {
+					jCTypesPret.setEnabled(true);
+				}else {
+					jCTypesPret.setEnabled(false);
+				}
+			}
+        });
         jCLibelle.setEditable(false);
         
         JLabel lblTypeRetrait = new JLabel();
@@ -274,7 +295,10 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         jSupprimer.setText("Supprimer");
         jSupprimer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jSupprimerActionPerformed(evt);
+            	int result = JOptionPane.showConfirmDialog(null, "Proceder a la suppression?", "Veuillez confirmer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            	if(result == JOptionPane.YES_NO_OPTION) {
+            		jSupprimerActionPerformed(evt);
+            	}	
             }
         });
 
@@ -457,6 +481,10 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         String personneRecup = jCMembres.getSelectedItem().toString();
         String typesRecup = jCTypesPret.getSelectedItem().toString();
         
+        if(jCLibelle.getSelectedItem().toString() == "Crédit") {
+			typesRecup = "-- --";
+		}
+        
         
         if(jTMontant.getText().trim().length()>0 && jCLibelle.getSelectedItem().toString().trim().length()>0
             && jCMembres.getSelectedItem().toString().trim().length()>0 && jCTypesPret.getSelectedItem().toString().trim().length()>0 && 
@@ -466,7 +494,7 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
 
             try{
             String requete="INSERT INTO transactions_table (libelle, montant, personne, personne_id, type_pret)value "
-                    + "('"+libelleRecup+"','"+montantRecup+"','"+personneRecup+"','"+typesRecup+"')";
+                    + "('"+libelleRecup+"','"+montantRecup+"','"+personneRecup+"','"+person_id+"','"+typesRecup+"')";
             stmt=maConnexion.ObtenirConnexion().createStatement();
             stmt.executeUpdate(requete);
             JOptionPane.showMessageDialog(null,"Enregistrement réussi!");
@@ -588,6 +616,22 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
     private void jTIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTIdActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTIdActionPerformed
+    
+    @SuppressWarnings("unchecked")
+	public void fetchMembers() {
+		 try{
+			 jCMembres.removeAllItems();
+	         java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
+	         java.sql.ResultSet resultat= stmt1.executeQuery("SELECT * FROM membres");
+	         
+	         while(resultat.next()){                     
+	        	 jCMembres.addItem(resultat.getString("id")+" "+resultat.getString("nom")+" "+resultat.getString("prenom")); 
+	         }
+		
+	       }catch(Exception e){
+	    	   System.out.print(e);
+	       }
+	}
 
     private void jBImprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBImprimerActionPerformed
         // TODO add your handling code here:
@@ -639,32 +683,18 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
         graphics.drawString(" *Libelle", 130, 80);        
         graphics.drawString(jCLibelle.getSelectedItem().toString(), 350, 80);
         
-        graphics.drawString(" *Prénom", 130, 110);
-        graphics.drawString(jTPrenom.getText(), 350, 110);
+        graphics.drawString(" *Montant", 130, 110);
+        graphics.drawString(jTMontant.getText().toString(), 350, 110);
         
-        graphics.drawString(" *Sexe", 130, 140);
-        graphics.drawString(jCSexe.getSelectedItem().toString(), 350, 140);
+        graphics.drawString(" *Type pret", 130, 140);
+        graphics.drawString(jCTypesPret.getSelectedItem().toString(), 350, 140);
         
-        graphics.drawString(" *NIF", 130, 170);
-        graphics.drawString(jFTNIF.getText(), 350, 170);      
-                
-        graphics.drawString(" *Salaire", 130, 200);
-        graphics.drawString(jTSalaire.getText()+" Gdes.", 350, 200);
-        
-        graphics.drawString(" *Montant dû", 130, 230);
-        graphics.drawString((String) TOTAL+" Gdes.", 350, 230);
-        
-        graphics.drawString(" *Poste", 130, 270);
-        graphics.drawString(jTAposte.getText().trim(), 350, 270);
+        graphics.drawString(" *Personne", 130, 170);
+        graphics.drawString(jCMembres.getSelectedItem().toString(), 350, 170);      
         
         graphics.drawString(" *Date de l'impression", 130, 300);
         graphics.drawString(dateRecup, 350, 300);
              
-        //graphics.drawString(" *Type Congé", 130, 330);
-        //graphics.drawString((String) jCTypeConge.getSelectedItem(), 350, 330);
-        
-        //graphics.drawString(" *Nbre. de Jours", 130, 360);
-        //graphics.drawString(s1, 350, 360);
 
         return PAGE_EXISTS;
             }
