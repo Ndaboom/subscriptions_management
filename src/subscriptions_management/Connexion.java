@@ -10,24 +10,29 @@ import java.sql.*;
  * @author The_Pirate
  */
 public class Connexion {
-    String urlPilote="com.mysql.jdbc.Driver";
-    String urlBaseDonnees="jdbc:Mysql://localhost:3306/subscriptions_management";//Chemin de connexion a la base des donnees
+    //String urlPilote="com.mysql.jdbc.Driver";
+	String urlPilote = "com.mysql.cj.jdbc.Driver";
+    String urlBaseDonnees="jdbc:mysql://localhost:8889/subscriptions_management"; //Chemin de connexion a la base des donnees
     Connection con;
-        public Connexion(){
+    public Connexion(){
+    	
     try{
-    Class.forName(urlPilote);
-    System.out.println("Chargement du pilote de réussi");
+    	Class.forName(urlPilote);
+    	System.out.println("Chargement du pilote de réussi");
     
-}catch(ClassNotFoundException ex){
-    System.out.println(ex);
-}
+    }catch(ClassNotFoundException ex){
+    	System.out.println(ex);
+    }
+    
     try{
-        con=DriverManager.getConnection(urlBaseDonnees,"root","");
+        con=DriverManager.getConnection(urlBaseDonnees,"root","root");
         System.out.println("Connexion à la base de données réussi");
     
-}catch(SQLException ex){
-    System.out.println(ex);
-}
+    }catch(SQLException ex){
+    	System.out.println("Connexion echouée"+ex);
+    	
+    }
+    
 }
         Connection ObtenirConnexion(){
         return con;
