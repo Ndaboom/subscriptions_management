@@ -10,11 +10,16 @@ import javax.swing.JFrame;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import javax.swing.JSeparator;
+import javax.swing.JMenuItem;
+import java.awt.event.MouseAdapter;
 
 /**
  *
  * @author MyLau
  */
+@SuppressWarnings("serial")
 public class GestionRH_View extends javax.swing.JFrame {
 
     /**
@@ -45,9 +50,12 @@ public class GestionRH_View extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem8 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
+        jMenu5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+        		jMenu5ActionPerformed(evt);
+        	}
+        });
         jMenu6 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -62,6 +70,7 @@ public class GestionRH_View extends javax.swing.JFrame {
             jPAppliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 1138, Short.MAX_VALUE)
         );
+        
         jPAppliLayout.setVerticalGroup(
             jPAppliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 551, Short.MAX_VALUE)
@@ -82,6 +91,7 @@ public class GestionRH_View extends javax.swing.JFrame {
                 jMenuItem1ActionPerformed(evt);
             }
         });
+        
         jMenu1.add(jMenuItem1);
         jMenu1.add(jSeparator1);
 
@@ -91,6 +101,7 @@ public class GestionRH_View extends javax.swing.JFrame {
                 jMenuItem5ActionPerformed(evt);
             }
         });
+        
         jMenu1.add(jMenuItem5);
 
         jMenuBar1.add(jMenu1);
@@ -106,16 +117,25 @@ public class GestionRH_View extends javax.swing.JFrame {
             }
         });
         jMenu4.add(jMenuItem4);
-        jMenu4.add(jSeparator4);
-
-        jMenuItem8.setText("Liste Avance");
-        jMenu4.add(jMenuItem8);
 
         jMenuBar1.add(jMenu4);
+        
+        JSeparator separator = new JSeparator();
+        jMenu4.add(separator);
+        
+        JMenuItem mntmNewMenuItem = new JMenuItem("Parametres");
+        mntmNewMenuItem.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		SettingsHome settingsH = new SettingsHome();
+        		settingsH.setVisible(true);
+        	}
+        });
+        jMenu4.add(mntmNewMenuItem);
 
         jMenu5.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jMenu5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/divers 32.png"))); // NOI18N
-        jMenu5.setText("DEMANDES DIVERSES");
+        jMenu5.setText("RAPPORTS");
         jMenuBar1.add(jMenu5);
 
         jMenu6.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -126,6 +146,7 @@ public class GestionRH_View extends javax.swing.JFrame {
                 jMenu6MouseClicked(evt);
             }
         });
+        
         jMenuBar1.add(jMenu6);
 
         setJMenuBar(jMenuBar1);
@@ -136,6 +157,7 @@ public class GestionRH_View extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPAppli, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+        
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -175,10 +197,18 @@ public class GestionRH_View extends javax.swing.JFrame {
         jPAppli.add(listeEmp);
         listeEmp.show();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
+    
+    private void jMenu5ActionPerformed(MouseEvent evt) {
+    	ListeTransaction listTrans = new ListeTransaction();
+    	jPAppli.removeAll();
+        jPAppli.repaint();
+        jPAppli.add(listTrans);
+        listTrans.show();
+    }
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here
-        AvanceHome addAvance=new AvanceHome();
+        TransactionsHome addAvance = new TransactionsHome();
         jPAppli.removeAll();
         jPAppli.repaint();
         jPAppli.add(addAvance);
@@ -229,9 +259,6 @@ public class GestionRH_View extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPanel jPAppli;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator4;
-    // End of variables declaration//GEN-END:variables
 }

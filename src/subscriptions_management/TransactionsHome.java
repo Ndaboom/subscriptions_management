@@ -37,7 +37,7 @@ import javax.swing.JLabel;
  *
  * @author MyLau
  */
-public final class AvanceHome extends javax.swing.JInternalFrame {
+public final class TransactionsHome extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form EmployeHome
@@ -58,7 +58,7 @@ public final class AvanceHome extends javax.swing.JInternalFrame {
     }
     
 
-    public AvanceHome() {
+    public TransactionsHome() {
         initComponents();
         jTId.setVisible(false);
         //jTAvance.setEditable(true);

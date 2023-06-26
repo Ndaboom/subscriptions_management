@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gestion_rv_v2;
+package subscriptions_management;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,46 +11,78 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JLabel;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout;
 
 /**
  *
  * @author MyLau
  */
-public class ListePromotion extends javax.swing.JInternalFrame {
+@SuppressWarnings("serial")
+public class ListeTransaction extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form ListeEmploye
      */
     Statement stmt;
     Connexion maConnexion=new Connexion();
-    public ListePromotion() {
+    float cumulTotal = (float) 0.0;
+    float capitalInitial = (float) 0.0;
+    float capitalActuel = (float) 0.0;
+    float totalDebit = (float) 0.0, totalCredit = (float) 0.0;
+    
+    
+    
+    public ListeTransaction() {
+    	
+    	// Get IC 
+    	String requeteIC = "select * from settings";
+        try {
+        	stmt=maConnexion.ObtenirConnexion().createStatement();
+			ResultSet resultat= stmt.executeQuery(requeteIC);
+			while(resultat.next()) {
+				capitalInitial = resultat.getFloat("current_initial_capital");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
         initComponents();
+        
+        getAllCreditTotal();
+        getAllDebitTotal();
+        
+        // Display credit and debit balance
+        lblNewLabel.setText("Balance = "+totalDebit+" (D) - "+totalCredit+" (C)"+ " = "+(totalDebit-totalCredit));
+        
         setLocation(8,32);
         DefaultTableModel model=new DefaultTableModel();
-        model.addColumn("code");
-        model.addColumn("Nom");        
-        model.addColumn("Prénom");
-        model.addColumn("Sexe");
-        model.addColumn("NIF");
-        model.addColumn("Niveau");
-        model.addColumn("Ancien Poste"); 
-        model.addColumn("Nouveau Poste");        
-        model.addColumn("Date Promotion");        
-        model.addColumn("Nouveau Salaire");
-         
+        model.addColumn("Libelle");
+        model.addColumn("Montant");        
+        model.addColumn("Personne");
+        model.addColumn("Type pret");
+        model.addColumn("Interet");
+        model.addColumn("Cumul interet"); 
+        model.addColumn("Date"); 
 
-        String requeteListeLivre="select* from PROMOTION";
+        String requeteListeLivre = "select * from transactions_table";
+        
         try{
-            stmt=maConnexion.ObtenirConnexion().createStatement();
             ResultSet resultat= stmt.executeQuery(requeteListeLivre);
             while(resultat.next()){
-                model.addRow(new Object [] {resultat.getString("code"),resultat.getString("nom"),resultat.getString("prenom"), resultat.getString("sexe"),resultat.getString("nif"),
-                    resultat.getString("niveau"),resultat.getString("anposte"),resultat.getString("nposte"),resultat.getDate("datepromo"),resultat.getString("nsalaire")});
+            	cumulTotal = Float.parseFloat(resultat.getString("interet")) + cumulTotal;
+                model.addRow(new Object [] {resultat.getString("libelle"),resultat.getString("montant"),resultat.getString("personne"), resultat.getString("type_pret"),
+                    resultat.getString("interet"), cumulTotal, resultat.getDate("date")});
+                detailsLabel.setText("Interet actuel (IA) "+cumulTotal+" + Capital Initial "+capitalInitial+" = C.A "+(cumulTotal+capitalInitial));
             }
-                }catch(SQLException ex){
-        System.out.println(ex);
+        } catch(SQLException ex) {
+        	System.out.println(ex);
         }
+        
         TableEmp.setModel(model);
+        
     }
 
     /**
@@ -65,15 +97,15 @@ public class ListePromotion extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TableEmp = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setClosable(true);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Liste des promotions"));
-
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Rapport general"));
+        
         TableEmp.setBackground(new java.awt.Color(204, 255, 204));
         TableEmp.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -89,7 +121,7 @@ public class ListePromotion extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(TableEmp);
 
         jPanel2.setBackground(new java.awt.Color(204, 255, 204));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Impression"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Options"));
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/printer.png"))); // NOI18N
         jButton1.setText("Imprimer");
@@ -98,20 +130,30 @@ public class ListePromotion extends javax.swing.JInternalFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        
+        detailsLabel = new JLabel("Chargement des données...");
+        
+        lblNewLabel = new JLabel("Balance");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(588, 588, 588)
-                .addComponent(jButton1)
-                .addContainerGap(575, Short.MAX_VALUE))
+        	jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(jPanel2Layout.createSequentialGroup()
+        			.addGap(70)
+        			.addComponent(detailsLabel, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE)
+        			.addGap(18)
+        			.addComponent(jButton1)
+        			.addGap(147)
+        			.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jButton1)
+        	jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        			.addComponent(jButton1)
+        			.addComponent(detailsLabel, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+        			.addComponent(lblNewLabel))
         );
+        jPanel2.setLayout(jPanel2Layout);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -127,7 +169,7 @@ public class ListePromotion extends javax.swing.JInternalFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(15, Short.MAX_VALUE)
+                .addContainerGap(19, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 438, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -152,24 +194,50 @@ public class ListePromotion extends javax.swing.JInternalFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        MessageFormat header = new MessageFormat("Liste des promotions");
+        MessageFormat header = new MessageFormat("Liste des transactions");
         MessageFormat footer = new MessageFormat("Page{0,number,integer}");
         try {
             TableEmp.print(JTable.PrintMode.FIT_WIDTH, header, footer);
-            
-
         } catch (java.awt.print.PrinterException e) {
             System.err.format("Erreur d'impression ", e.getMessage());
         }
-
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }
+    //GEN-LAST:event_jButton1ActionPerformed
+    
+    private void getAllDebitTotal() {
+    	try {
+    		java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
+            java.sql.ResultSet resultat= stmt1.executeQuery("SELECT ROUND(SUM(montant),2) WHERE libelle='"+"Débit"+"' FROM transactions_table");
+            
+            while(resultat.next()) {
+            	totalDebit = resultat.getFloat(1);
+	        }
+    	}catch(SQLException e) {
+    		System.out.println(e);
+    	}
+    }
+    
+    private void getAllCreditTotal() {
+    	try {
+    		java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
+            java.sql.ResultSet resultat= stmt1.executeQuery("SELECT ROUND(SUM(montant),2) WHERE libelle='"+"Crédit"+"' FROM transactions_table");
+            
+            while(resultat.next()) {
+            	totalCredit = resultat.getFloat(1);
+	        }
+    	}catch(SQLException e) {
+    		System.out.println(e);
+    	}
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    
     private javax.swing.JTable TableEmp;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    // End of variables declaration//GEN-END:variables
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel detailsLabel;
+    private JLabel lblNewLabel;
 }
