@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author MyLau
  */
+@SuppressWarnings("serial")
 public class ListeEmploye extends javax.swing.JInternalFrame {
 
     /**
@@ -37,7 +38,9 @@ public class ListeEmploye extends javax.swing.JInternalFrame {
         model.addColumn("Statut");
         model.addColumn("Téléphone");
         model.addColumn("Email");
+        
         String requeteListeLivre="select * from membres";
+        
         try{
             stmt=maConnexion.ObtenirConnexion().createStatement();
             ResultSet resultat= stmt.executeQuery(requeteListeLivre);
