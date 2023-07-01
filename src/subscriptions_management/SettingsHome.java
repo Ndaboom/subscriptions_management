@@ -24,7 +24,8 @@ public class SettingsHome extends JFrame{
 	public SettingsHome() {
 		setTitle("Parametres");
 		getContentPane().setLayout(null);
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		setSize(450, 272);
+		setLocationRelativeTo(null);
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.WHITE);

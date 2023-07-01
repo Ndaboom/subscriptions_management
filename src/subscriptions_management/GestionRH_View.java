@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JSeparator;
 import javax.swing.JMenuItem;
 import java.awt.event.MouseAdapter;
+import javax.swing.JMenu;
 
 /**
  *
@@ -51,11 +52,6 @@ public class GestionRH_View extends javax.swing.JFrame {
         jMenu4 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
-        jMenu5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-        		jMenu5ActionPerformed(evt);
-        	}
-        });
         jMenu6 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -124,9 +120,8 @@ public class GestionRH_View extends javax.swing.JFrame {
         jMenu4.add(separator);
         
         JMenuItem mntmNewMenuItem = new JMenuItem("Parametres");
-        mntmNewMenuItem.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent e) {
+        mntmNewMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
         		SettingsHome settingsH = new SettingsHome();
         		settingsH.setVisible(true);
         	}
@@ -137,6 +132,31 @@ public class GestionRH_View extends javax.swing.JFrame {
         jMenu5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/divers 32.png"))); // NOI18N
         jMenu5.setText("RAPPORTS");
         jMenuBar1.add(jMenu5);
+        
+        mntmNewMenuItem_1 = new JMenuItem("Rapport general");
+        mntmNewMenuItem_1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        		// Launch general report
+        		ListeTransaction listTrans = new ListeTransaction();
+            	jPAppli.removeAll();
+                jPAppli.repaint();
+                jPAppli.add(listTrans);
+                listTrans.show();
+        	}
+        });
+        jMenu5.add(mntmNewMenuItem_1);
+        
+        mnNewMenu = new JMenuItem("Rapport personnalisé ");
+        mnNewMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        		SpecialReport spReport = new SpecialReport();
+            	jPAppli.removeAll();
+                jPAppli.repaint();
+                jPAppli.add(spReport);
+                spReport.show();
+        	}
+        });
+        jMenu5.add(mnNewMenu);
 
         jMenu6.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jMenu6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/fermer 32.png"))); // NOI18N
@@ -197,14 +217,6 @@ public class GestionRH_View extends javax.swing.JFrame {
         jPAppli.add(listeEmp);
         listeEmp.show();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
-    
-    private void jMenu5ActionPerformed(MouseEvent evt) {
-    	ListeTransaction listTrans = new ListeTransaction();
-    	jPAppli.removeAll();
-        jPAppli.repaint();
-        jPAppli.add(listTrans);
-        listTrans.show();
-    }
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here
@@ -261,4 +273,6 @@ public class GestionRH_View extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPAppli;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private JMenuItem mntmNewMenuItem_1;
+    private JMenuItem mnNewMenu;
 }
