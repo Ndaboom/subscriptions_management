@@ -205,29 +205,31 @@ public class ListeTransaction extends javax.swing.JInternalFrame {
     //GEN-LAST:event_jButton1ActionPerformed
     
     private void getAllDebitTotal() {
-    	try {
-    		java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-            java.sql.ResultSet resultat= stmt1.executeQuery("SELECT ROUND(SUM(montant),2) WHERE libelle='"+"Débit"+"' FROM transactions_table");
-            
-            while(resultat.next()) {
-            	totalDebit = resultat.getFloat(1);
-	        }
-    	}catch(SQLException e) {
-    		System.out.println(e);
-    	}
+        try {
+            java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
+            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit'";
+            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+
+            while (resultat.next()) {
+                totalDebit = resultat.getFloat(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
     }
     
     private void getAllCreditTotal() {
     	try {
-    		java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-            java.sql.ResultSet resultat= stmt1.executeQuery("SELECT ROUND(SUM(montant),2) WHERE libelle='"+"Crédit"+"' FROM transactions_table");
-            
-            while(resultat.next()) {
+            java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
+            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit'";
+            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+
+            while (resultat.next()) {
             	totalCredit = resultat.getFloat(1);
-	        }
-    	}catch(SQLException e) {
-    		System.out.println(e);
-    	}
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
     }
 
 

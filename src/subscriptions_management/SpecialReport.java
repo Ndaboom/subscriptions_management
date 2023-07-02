@@ -38,7 +38,12 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     
     public SpecialReport() {
     	
-    	// Get IC 
+        initComponents();
+        
+        getAllDebitTotal();
+        getAllCreditTotal();
+        
+        // Get IC 
     	String requeteIC = "select * from settings";
         try {
         	stmt=maConnexion.ObtenirConnexion().createStatement();
@@ -50,8 +55,6 @@ public class SpecialReport extends javax.swing.JInternalFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-        initComponents();
         
         // Display credit and debit balance
         lblNewLabel.setText("Balance = "+totalDebit+" (D) - "+totalCredit+" (C)"+ " = "+(totalDebit-totalCredit));
@@ -231,7 +234,33 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     }
     //GEN-LAST:event_jButton1ActionPerformed
     
+    private void getAllDebitTotal() {
+        try {
+            java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
+            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit'";
+            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+
+            while (resultat.next()) {
+                totalDebit = resultat.getFloat(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
     
+    private void getAllCreditTotal() {
+    	try {
+            java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
+            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit'";
+            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+
+            while (resultat.next()) {
+            	totalCredit = resultat.getFloat(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
