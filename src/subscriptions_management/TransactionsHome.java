@@ -156,6 +156,7 @@ public final class TransactionsHome extends javax.swing.JInternalFrame {
 				String input = jCMembres.getSelectedItem().toString();
 				String[] parts = input.split(" ");
 				person_id = parts[0];
+				System.out.println("Clicked");
 			}
         });
         jCMembres.setEditable(false);
@@ -480,9 +481,16 @@ public final class TransactionsHome extends javax.swing.JInternalFrame {
         String montantRecup = jTMontant.getText().trim();
         String personneRecup = jCMembres.getSelectedItem().toString();
         String typesRecup = jCTypesPret.getSelectedItem().toString();
+        float gainPercentage = 0;
         
         if(jCLibelle.getSelectedItem().toString() == "Crédit") {
 			typesRecup = "-- --";
+		} else if(jCLibelle.getSelectedItem().toString() == "Débit") {
+			if(typesRecup == "Ordinaire") {
+				gainPercentage = 2;
+			} else if(typesRecup == "Express") {
+				gainPercentage = 4;
+			}
 		}
         
         
@@ -493,8 +501,8 @@ public final class TransactionsHome extends javax.swing.JInternalFrame {
         if(dataStatu==true){
 
             try{
-            String requete="INSERT INTO transactions_table (libelle, montant, personne, personne_id, type_pret)value "
-                    + "('"+libelleRecup+"','"+montantRecup+"','"+personneRecup+"','"+person_id+"','"+typesRecup+"')";
+            String requete="INSERT INTO transactions_table (libelle, montant, personne, personne_id, type_pret, gain_percentage)value "
+                    + "('"+libelleRecup+"','"+montantRecup+"','"+personneRecup+"','"+person_id+"','"+typesRecup+"','"+gainPercentage+"')";
             stmt=maConnexion.ObtenirConnexion().createStatement();
             stmt.executeUpdate(requete);
             JOptionPane.showMessageDialog(null,"Enregistrement réussi!");
@@ -510,19 +518,13 @@ public final class TransactionsHome extends javax.swing.JInternalFrame {
             stmt =maConnexion.ObtenirConnexion().createStatement();
             String requete="UPDATE transactions_table  SET libelle='"+libelleRecup+"',montant='"+montantRecup+"' where id='"+table1_click+"'";
 
-      try{
-            stmt =maConnexion.ObtenirConnexion().createStatement();
             stmt .executeUpdate(requete);
             JOptionPane.showMessageDialog(null, "Modification réussie!");
             getData();
-        } catch (SQLException | HeadlessException e){
-            JOptionPane.showMessageDialog(null,e);
-        }
-            
-        }
-      catch(SQLException ex){
+       
+      }catch(SQLException ex){
             System.err.println(ex);
-        }
+      }
         }
         }else{
             JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs!");
