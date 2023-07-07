@@ -293,13 +293,13 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         		.addGroup(jPanel1Layout.createSequentialGroup()
         			.addContainerGap()
         			.addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
-        				.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 1408, GroupLayout.PREFERRED_SIZE)
-        				.addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        				.addComponent(jPanel2, GroupLayout.DEFAULT_SIZE, 1402, Short.MAX_VALUE)
+        				.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 1408, GroupLayout.PREFERRED_SIZE))
+        			.addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
-        	jPanel1Layout.createParallelGroup(Alignment.LEADING)
-        		.addGroup(Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        	jPanel1Layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(jPanel1Layout.createSequentialGroup()
         			.addContainerGap(19, Short.MAX_VALUE)
         			.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 438, GroupLayout.PREFERRED_SIZE)
         			.addPreferredGap(ComponentPlacement.RELATED)
@@ -327,7 +327,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     @SuppressWarnings("unused")
 	private void fetchData(String string, String string2) {
         /** Fetching data **/
-
+    	System.out.println("Fetching data from "+string+" to "+ string2);
     	// Clear all rows from the table
     	tableModel.setRowCount(0);
     	

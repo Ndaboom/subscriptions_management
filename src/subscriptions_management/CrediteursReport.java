@@ -29,24 +29,24 @@ import javax.swing.LayoutStyle.ComponentPlacement;
  */
 
 @SuppressWarnings("serial")
-public class DebiteursReport extends javax.swing.JInternalFrame {
+public class CrediteursReport extends javax.swing.JInternalFrame {
 
     Statement stmt;
     Connexion maConnexion=new Connexion();
     float cumulTotal = (float) 0.0;
     float capitalInitial = (float) 0.0;
     float capitalActuel = (float) 0.0;
-    float totalDebit = (float) 0.0, totalCredit = (float) 0.0;
+    float totalCredit = (float) 0.0;
     DefaultTableModel tableModel;
     JDateChooser jTDateNais_1, jTDateNais_1_1;
     Date selectedDate, selectedDate1;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     
-    public DebiteursReport() {
+    public CrediteursReport() {
     	
         initComponents();
         // Display credit and debit balance
-        detailsLabel.setText("Total debits (D) : ");
+        detailsLabel.setText("Total credits (C) : ");
         getAllDebitTotal(null,null);
         
         // Get IC 
@@ -84,7 +84,7 @@ public class DebiteursReport extends javax.swing.JInternalFrame {
         setClosable(true);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Liste debiteurs"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Liste crediteurs"));
         
         // Create the table model & fulfil with data
         
@@ -93,7 +93,7 @@ public class DebiteursReport extends javax.swing.JInternalFrame {
         java.sql.Statement stmt1;
 		try {
 			stmt1 = maConnexion.ObtenirConnexion().createStatement();
-			String query = "SELECT * FROM transactions_table WHERE libelle = 'Débit'";
+			String query = "SELECT * FROM transactions_table WHERE libelle = 'Crédit'";
 	        java.sql.ResultSet resultSet = stmt1.executeQuery(query);
 	        
 	        // Convert the resultSet to a format that can be used to populate a JTable
@@ -140,7 +140,7 @@ public class DebiteursReport extends javax.swing.JInternalFrame {
             }
         });
         
-        detailsLabel = new JLabel("Total debits (D) : ");
+        detailsLabel = new JLabel("Total crédits (C) : ");
         
         jTDateNais_1 = new JDateChooser();
         jTDateNais_1.setDateFormatString("yyyy-MM-dd");
@@ -281,21 +281,23 @@ public class DebiteursReport extends javax.swing.JInternalFrame {
     private void getAllDebitTotal(String string, String string2) {
         try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
+            
             String query = "";
             if(string != null && string2 != null) {
             	System.out.println("Fetching data from for total purpose between two dates  "+selectedDate+" to "+ selectedDate1);
-            	query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit' AND date > '"+sdf.format(selectedDate)+"' AND date < '"+sdf.format(selectedDate1)+"' + INTERVAL 1 DAY";
+            	query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit' AND date > '"+sdf.format(selectedDate)+"' AND date < '"+sdf.format(selectedDate1)+"' + INTERVAL 1 DAY";
             } else {
             	System.out.println("Fetching all debits record for total purpose");
-            	query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit'";
+            	query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit'";
             }
+            
             java.sql.ResultSet resultat = stmt1.executeQuery(query);
 
             while (resultat.next()) {
-                totalDebit = resultat.getFloat(1);
+                totalCredit = resultat.getFloat(1);
             }
             
-            detailsLabel.setText("Total debits (D) : "+totalDebit);
+            detailsLabel.setText("Total credits (D) : "+totalCredit);
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -317,7 +319,7 @@ public class DebiteursReport extends javax.swing.JInternalFrame {
 		model.addColumn("Cumul interet"); 
 		model.addColumn("Date"); 
 
-		String requeteListeLivre = "SELECT * FROM transactions_table WHERE libelle = 'Débit' AND date > '"+sdf.format(selectedDate)+"' AND date < '"+sdf.format(selectedDate1)+"' + INTERVAL 1 DAY";
+		String requeteListeLivre = "SELECT * FROM transactions_table WHERE libelle = 'Crédit' AND date > '"+sdf.format(selectedDate)+"' AND date < '"+sdf.format(selectedDate1)+"' + INTERVAL 1 DAY";
 		cumulTotal = (float) 0.0;
 		try{
 		    ResultSet resultat= stmt.executeQuery(requeteListeLivre);

@@ -10,11 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 import javax.swing.JSeparator;
 import javax.swing.JMenuItem;
-import java.awt.event.MouseAdapter;
-import javax.swing.JMenu;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  *
@@ -31,7 +30,6 @@ public class GestionRH_View extends javax.swing.JFrame {
         this.setIconImage(new ImageIcon(getClass().getResource("icone_jar.png")).getImage());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
        // setAlwaysOnTop(true);
-       
     }
 
     /**
@@ -171,6 +169,15 @@ public class GestionRH_View extends javax.swing.JFrame {
         jMenu5.add(reportDebiteurs);
         
         mntmNewMenuItem_2 = new JMenuItem("Rapport crediteurs");
+        mntmNewMenuItem_2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		CrediteursReport crediteursReport = new CrediteursReport();
+            	jPAppli.removeAll();
+                jPAppli.repaint();
+                jPAppli.add(crediteursReport);
+                crediteursReport.show();
+        	}
+        });
         jMenu5.add(mntmNewMenuItem_2);
 
         jMenu6.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
