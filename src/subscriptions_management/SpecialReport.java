@@ -48,6 +48,8 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     float actualGain = (float) 0.0;
     String person_id;
+    boolean ifMembers = false;
+    ResultSet resultat;
     
     
     
@@ -71,7 +73,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         
         try{
         	stmt= maConnexion.ObtenirConnexion().createStatement();
-            ResultSet resultat= stmt.executeQuery(requeteListeLivre);
+            resultat = stmt.executeQuery(requeteListeLivre);
             while(resultat.next()){
             	actualGain = Float.parseFloat(resultat.getString("interet")) + actualGain;
                 detailsLabel.setText("Interet actuel (IA) "+actualGain+" + Capital Initial "+capitalInitial+" = C.A "+(cumulTotal+capitalInitial));
@@ -109,16 +111,16 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         /** Fetch data **/
         try {
         	java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-            java.sql.ResultSet resultSet= stmt1.executeQuery("SELECT * FROM transactions_table");
+        	resultat= stmt1.executeQuery("SELECT * FROM transactions_table");
             cumulTotal = 0;
-            while (resultSet.next()) {
-            	cumulTotal = Float.parseFloat(resultSet.getString("interet")) + cumulTotal;
+            while (resultat.next()) {
+            	cumulTotal = Float.parseFloat(resultat.getString("interet")) + cumulTotal;
                 // Retrieve values from the result set
-                String date = resultSet.getString("date");
-                int id = resultSet.getInt("id");
-                String libelle = resultSet.getString("libelle");
-                float montant = resultSet.getFloat("montant");
-                String person = resultSet.getString("personne");
+                String date = resultat.getString("date");
+                int id = resultat.getInt("id");
+                String libelle = resultat.getString("libelle");
+                float montant = resultat.getFloat("montant");
+                String person = resultat.getString("personne");
 
                 // Calculate Debit, Credit, and Solde based on the Libelle value
                 float debit = libelle.equals("Débit") ? montant : 0;
@@ -127,11 +129,11 @@ public class SpecialReport extends javax.swing.JInternalFrame {
                 String[] parts = person.split(" ");
 
                 // Add a row to the table model
-                Object[] row = {date, id, libelle+" par "+parts[1]+" "+parts[2], debit, credit, resultSet.getString("interet"), cumulTotal, 0};
+                Object[] row = {date, id, libelle+" par "+parts[1]+" "+parts[2], debit, credit, resultat.getString("interet"), cumulTotal, 0};
                 tableModel.addRow(row);
             }
 
-            resultSet.close();
+            resultat.close();
             stmt1.close();
             
         } catch (SQLException e) {
@@ -232,6 +234,9 @@ public class SpecialReport extends javax.swing.JInternalFrame {
 				String input = jCMembres.getSelectedItem().toString();
 				String[] parts = input.split(" ");
 				person_id = parts[0];
+				
+				Utils.fetchTransactionsByUser(person_id, null, null);
+				
 			}
         });
         jCMembres.setEditable(false);
@@ -333,16 +338,16 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     	
         try {
         	java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-            java.sql.ResultSet resultSet= stmt1.executeQuery("SELECT * FROM transactions_table WHERE date >= '"+string+"' AND date <= '"+string2+"' ");
+        	resultat = stmt1.executeQuery("SELECT * FROM transactions_table WHERE date >= '"+string+"' AND date <= '"+string2+"' ");
             cumulTotal = 0;
-            while (resultSet.next()) {
-            	cumulTotal = Float.parseFloat(resultSet.getString("interet")) + cumulTotal;
+            while (resultat.next()) {
+            	cumulTotal = Float.parseFloat(resultat.getString("interet")) + cumulTotal;
                 // Retrieve values from the result set
-                String date = resultSet.getString("date");
-                int id = resultSet.getInt("id");
-                String libelle = resultSet.getString("libelle");
-                float montant = resultSet.getFloat("montant");
-                String person = resultSet.getString("personne");
+                String date = resultat.getString("date");
+                int id = resultat.getInt("id");
+                String libelle = resultat.getString("libelle");
+                float montant = resultat.getFloat("montant");
+                String person = resultat.getString("personne");
 
                 // Calculate Debit, Credit, and Solde based on the Libelle value
                 float debit = libelle.equals("Débit") ? montant : 0;
@@ -351,11 +356,11 @@ public class SpecialReport extends javax.swing.JInternalFrame {
                 String[] parts = person.split(" ");
 
                 // Add a row to the table model
-                Object[] row = {date, id, libelle+" par "+parts[1]+" "+parts[2], debit, credit, resultSet.getString("interet"), cumulTotal, 0};
+                Object[] row = {date, id, libelle+" par "+parts[1]+" "+parts[2], debit, credit, resultat.getString("interet"), cumulTotal, 0};
                 tableModel.addRow(row);
             }
 
-            resultSet.close();
+            resultat.close();
             stmt1.close();
             
         } catch (SQLException e) {
@@ -380,7 +385,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
             String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit' AND date >= '"+string+"' AND date <= '"+string2+"'";
-            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+            resultat = stmt1.executeQuery(query);
             
             while (resultat.next()) {
                 totalDebit = resultat.getFloat(1);
@@ -392,7 +397,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
             String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit' AND date >= '"+string+"' AND date <= '"+string2+"'";
-            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+            resultat = stmt1.executeQuery(query);
 
             while (resultat.next()) {
             	totalCredit = resultat.getFloat(1);
@@ -407,7 +412,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     	String requeteIC = "select * from settings";
         try {
         	stmt=maConnexion.ObtenirConnexion().createStatement();
-			ResultSet resultat= stmt.executeQuery(requeteIC);
+			resultat= stmt.executeQuery(requeteIC);
 			while(resultat.next()) {
 				capitalInitial = resultat.getFloat("current_initial_capital");
 			}
@@ -436,7 +441,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
             String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit'";
-            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+            resultat = stmt1.executeQuery(query);
 
             while (resultat.next()) {
                 totalDebit = resultat.getFloat(1);
@@ -450,7 +455,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     	try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
             String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit'";
-            java.sql.ResultSet resultat = stmt1.executeQuery(query);
+            resultat = stmt1.executeQuery(query);
 
             while (resultat.next()) {
             	totalCredit = resultat.getFloat(1);
@@ -460,11 +465,12 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         }
     }
     
-    public void fetchMembers() {
+    @SuppressWarnings("unchecked")
+	public void fetchMembers() {
 		 try{
 			 jCMembres.removeAllItems();
 	         java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-	         java.sql.ResultSet resultat= stmt1.executeQuery("SELECT * FROM membres");
+	         resultat= stmt1.executeQuery("SELECT * FROM membres");
 	         
 	         while(resultat.next()){                     
 	        	 jCMembres.addItem(resultat.getString("id")+" "+resultat.getString("nom")+" "+resultat.getString("prenom")); 
