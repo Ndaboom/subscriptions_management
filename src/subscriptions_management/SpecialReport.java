@@ -69,18 +69,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         setLocation(8,32);
         
         
-        String requeteListeLivre = "select * from transactions_table";
-        
-        try{
-        	stmt= maConnexion.ObtenirConnexion().createStatement();
-            resultat = stmt.executeQuery(requeteListeLivre);
-            while(resultat.next()){
-            	actualGain = Float.parseFloat(resultat.getString("interet")) + actualGain;
-                detailsLabel.setText("Interet actuel (IA) "+actualGain+" + Capital Initial "+capitalInitial+" = C.A "+(cumulTotal+capitalInitial));
-            }
-        } catch(SQLException ex) {
-        	System.out.println(ex);
-        }
+        calculateCABetweenTwoDates(null, null);
     }
 
     /**
@@ -186,10 +175,11 @@ public class SpecialReport extends javax.swing.JInternalFrame {
                     // Perform any actions or logic based on the selected date
                     System.out.println("Selected Date: " + selectedDate);
                     
-                    if(selectedDate != null || selectedDate1 != null) {
+                    if(selectedDate != null && selectedDate1 != null) {
                     	fetchData(sdf.format(selectedDate),sdf.format(selectedDate1));
                     	getAllDebitTotal();
                     	getAllCreditTotal();
+                    	calculateCABetweenTwoDates(sdf.format(selectedDate), sdf.format(selectedDate1));
                     }   
                 }
             }
@@ -205,10 +195,11 @@ public class SpecialReport extends javax.swing.JInternalFrame {
                     // Perform any actions or logic based on the selected date
                     System.out.println("Selected Date: " + selectedDate1);
                     
-                    if(selectedDate != null || selectedDate1 != null) {
+                    if(selectedDate != null && selectedDate1 != null) {
                     	fetchData(sdf.format(selectedDate),sdf.format(selectedDate1));
                     	getAllDebitTotal();
                     	getAllCreditTotal();
+                    	calculateCABetweenTwoDates(sdf.format(selectedDate), sdf.format(selectedDate1));
                     }
                 }
             }
@@ -329,8 +320,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    @SuppressWarnings("unused")
-	private void fetchData(String string, String string2) {
+    private void fetchData(String string, String string2) {
         /** Fetching data **/
     	System.out.println("Fetching data from "+string+" to "+ string2);
     	// Clear all rows from the table
@@ -338,7 +328,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
     	
         try {
         	java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-        	resultat = stmt1.executeQuery("SELECT * FROM transactions_table WHERE date >= '"+string+"' AND date <= '"+string2+"' ");
+        	resultat = stmt1.executeQuery("SELECT * FROM transactions_table WHERE date > '"+string+"' AND date < '"+string2+"' + INTERVAL 1 DAY ");
             cumulTotal = 0;
             while (resultat.next()) {
             	cumulTotal = Float.parseFloat(resultat.getString("interet")) + cumulTotal;
@@ -384,7 +374,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         /**  Update Debit Total & Credit Total **/
         try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
-            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit' AND date >= '"+string+"' AND date <= '"+string2+"'";
+            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Débit' AND date > '"+string+"' AND date < '"+string2+"' + INTERVAL 1 DAY ";
             resultat = stmt1.executeQuery(query);
             
             while (resultat.next()) {
@@ -396,7 +386,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         
         try {
             java.sql.Statement stmt1 = maConnexion.ObtenirConnexion().createStatement();
-            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit' AND date >= '"+string+"' AND date <= '"+string2+"'";
+            String query = "SELECT ROUND(SUM(montant), 2) FROM transactions_table WHERE libelle = 'Crédit' AND date > '"+string+"' AND date < '"+string2+"' + INTERVAL 1 DAY";
             resultat = stmt1.executeQuery(query);
 
             while (resultat.next()) {
@@ -480,6 +470,27 @@ public class SpecialReport extends javax.swing.JInternalFrame {
 	    	   System.out.print(e);
 	       }
 	}
+    
+    public void calculateCABetweenTwoDates(String string, String string1) {
+    	String requeteListeLivre = "";
+    	if(string != null && string1 != null) {
+    	requeteListeLivre = "select * from transactions_table WHERE date > '"+string+"' AND date < '"+string1+"' + INTERVAL 1 DAY ";
+    	}else {
+    	requeteListeLivre = "select * from transactions_table";	
+    	}
+        
+    	actualGain = (float) 0.0;
+        try{
+        	stmt= maConnexion.ObtenirConnexion().createStatement();
+            resultat = stmt.executeQuery(requeteListeLivre);
+            while(resultat.next()){
+            	actualGain = Float.parseFloat(resultat.getString("interet")) + actualGain;
+                detailsLabel.setText("Interet actuel (IA) "+actualGain+" + Capital Initial "+capitalInitial+" = C.A "+(cumulTotal+capitalInitial));
+            }
+        } catch(SQLException ex) {
+        	System.out.println(ex);
+        }
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
