@@ -10,11 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 import javax.swing.JSeparator;
 import javax.swing.JMenuItem;
-import java.awt.event.MouseAdapter;
-import javax.swing.JMenu;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  *
@@ -31,7 +30,6 @@ public class GestionRH_View extends javax.swing.JFrame {
         this.setIconImage(new ImageIcon(getClass().getResource("icone_jar.png")).getImage());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
        // setAlwaysOnTop(true);
-       
     }
 
     /**
@@ -157,6 +155,30 @@ public class GestionRH_View extends javax.swing.JFrame {
         	}
         });
         jMenu5.add(mnNewMenu);
+        
+        reportDebiteurs = new JMenuItem("Rapport debiteurs");
+        reportDebiteurs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        		DebiteursReport debiteursReport = new DebiteursReport();
+            	jPAppli.removeAll();
+                jPAppli.repaint();
+                jPAppli.add(debiteursReport);
+                debiteursReport.show();
+        	}
+        });
+        jMenu5.add(reportDebiteurs);
+        
+        mntmNewMenuItem_2 = new JMenuItem("Rapport crediteurs");
+        mntmNewMenuItem_2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		CrediteursReport crediteursReport = new CrediteursReport();
+            	jPAppli.removeAll();
+                jPAppli.repaint();
+                jPAppli.add(crediteursReport);
+                crediteursReport.show();
+        	}
+        });
+        jMenu5.add(mntmNewMenuItem_2);
 
         jMenu6.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jMenu6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/fermer 32.png"))); // NOI18N
@@ -275,4 +297,6 @@ public class GestionRH_View extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private JMenuItem mntmNewMenuItem_1;
     private JMenuItem mnNewMenu;
+    private JMenuItem reportDebiteurs;
+    private JMenuItem mntmNewMenuItem_2;
 }
