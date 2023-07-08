@@ -23,6 +23,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -94,50 +96,9 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         String[] columnNames = {"Date", "Id Op", "Libelle", "Debit", "Credit", "Interet", "Cumul interet", "Solde"};
         tableModel = new DefaultTableModel(columnNames, 0);
         
-        /** Fetch data **/
-        try {
-        	java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-        	resultat= stmt1.executeQuery("SELECT * FROM transactions_table");
-            cumulTotal = 0;
-            while (resultat.next()) {
-            	cumulTotal = Float.parseFloat(resultat.getString("interet")) + cumulTotal;
-                // Retrieve values from the result set
-                String date = resultat.getString("date");
-                int id = resultat.getInt("id");
-                String libelle = resultat.getString("libelle");
-                float montant = resultat.getFloat("montant");
-                String person = resultat.getString("personne");
-
-                // Calculate Debit, Credit, and Solde based on the Libelle value
-                float debit = libelle.equals("Débit") ? montant : 0;
-                float credit = libelle.equals("Crédit") ? montant : 0;
-                
-                String[] parts = person.split(" ");
-
-                // Add a row to the table model
-                Object[] row = {date, id, libelle+" par "+parts[1]+" "+parts[2], debit, credit, resultat.getString("interet"), cumulTotal, 0};
-                tableModel.addRow(row);
-            }
-
-            resultat.close();
-            stmt1.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         
-     // Update the Solde values in the table model
-        float solde = capitalInitial;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            float debit = (float) tableModel.getValueAt(i, 3);
-            float credit = (float) tableModel.getValueAt(i, 4);
-            solde = solde - debit + credit;
-            tableModel.setValueAt(solde, i, 7);
-        }
-
-        // Create the table with the table model
-        TableEmp = new JTable(tableModel);
         /** Fetch data **/
+        initTableData();
         
         TableEmp.setBackground(new java.awt.Color(204, 255, 204));
         jScrollPane1.setViewportView(TableEmp);
@@ -309,6 +270,15 @@ public class SpecialReport extends javax.swing.JInternalFrame {
 			}
         });
         jCMembres.setEditable(false);
+        
+        JButton btnReinitialise = new JButton();
+        btnReinitialise.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		ifMembers = false;
+        	}
+        });
+        btnReinitialise.setIcon(new ImageIcon(SpecialReport.class.getResource("/Image/home.png")));
+        btnReinitialise.setText("Reinitialisé");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2Layout.setHorizontalGroup(
@@ -330,10 +300,13 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         					.addComponent(jButton1)
         					.addGap(89)
         					.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 269, GroupLayout.PREFERRED_SIZE))
-        				.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING, false)
-        					.addComponent(jCMembres, Alignment.LEADING, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        					.addComponent(lblNewLabel_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)))
-        			.addContainerGap(97, Short.MAX_VALUE))
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING, false)
+        						.addComponent(jCMembres, Alignment.LEADING, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        						.addComponent(lblNewLabel_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))
+        					.addGap(18)
+        					.addComponent(btnReinitialise, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)))
+        			.addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
         	jPanel2Layout.createParallelGroup(Alignment.LEADING)
@@ -355,8 +328,10 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         			.addGap(18)
         			.addComponent(lblNewLabel_2)
         			.addPreferredGap(ComponentPlacement.UNRELATED)
-        			.addComponent(jCMembres, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        			.addContainerGap(59, Short.MAX_VALUE))
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(jCMembres, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(btnReinitialise, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+        			.addContainerGap(71, Short.MAX_VALUE))
         );
         
         jPanel2.setLayout(jPanel2Layout);
@@ -565,7 +540,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
 		 try{
 			 jCMembres.removeAllItems();
 	         java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-	         resultat= stmt1.executeQuery("SELECT * FROM membres");
+	         resultat= stmt1.executeQuery("SELECT * FROM membres WHERE partenaire_avec IS NULL");
 	         jCMembres.removeAll();
 	         jCMembres.addItem("Veuillez choisir un membre");
 	         while(resultat.next()){                     
@@ -596,6 +571,52 @@ public class SpecialReport extends javax.swing.JInternalFrame {
         } catch(SQLException ex) {
         	System.out.println(ex);
         }
+    }
+    
+    private void initTableData() {
+    	/** Fetch data **/
+        try {
+        	java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
+        	resultat= stmt1.executeQuery("SELECT * FROM transactions_table");
+            cumulTotal = 0;
+            while (resultat.next()) {
+            	cumulTotal = Float.parseFloat(resultat.getString("interet")) + cumulTotal;
+                // Retrieve values from the result set
+                String date = resultat.getString("date");
+                int id = resultat.getInt("id");
+                String libelle = resultat.getString("libelle");
+                float montant = resultat.getFloat("montant");
+                String person = resultat.getString("personne");
+
+                // Calculate Debit, Credit, and Solde based on the Libelle value
+                float debit = libelle.equals("Débit") ? montant : 0;
+                float credit = libelle.equals("Crédit") ? montant : 0;
+                
+                String[] parts = person.split(" ");
+
+                // Add a row to the table model
+                Object[] row = {date, id, libelle+" par "+parts[1]+" "+parts[2], debit, credit, resultat.getString("interet"), cumulTotal, 0};
+                tableModel.addRow(row);
+            }
+
+            resultat.close();
+            stmt1.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+     // Update the Solde values in the table model
+        float solde = capitalInitial;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            float debit = (float) tableModel.getValueAt(i, 3);
+            float credit = (float) tableModel.getValueAt(i, 4);
+            solde = solde - debit + credit;
+            tableModel.setValueAt(solde, i, 7);
+        }
+
+        // Create the table with the table model
+        TableEmp = new JTable(tableModel);
     }
 
 
