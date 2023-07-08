@@ -540,7 +540,7 @@ public class SpecialReport extends javax.swing.JInternalFrame {
 		 try{
 			 jCMembres.removeAllItems();
 	         java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-	         resultat= stmt1.executeQuery("SELECT * FROM membres");
+	         resultat= stmt1.executeQuery("SELECT * FROM membres WHERE partenaire_avec IS NULL");
 	         jCMembres.removeAll();
 	         jCMembres.addItem("Veuillez choisir un membre");
 	         while(resultat.next()){                     

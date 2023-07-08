@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:8889
--- Généré le : jeu. 29 juin 2023 à 06:29
+-- Généré le : sam. 08 juil. 2023 à 08:16
 -- Version du serveur : 5.7.39
 -- Version de PHP : 7.4.33
 
@@ -56,6 +56,7 @@ CREATE TABLE `membres` (
   `statut_membre` varchar(200) NOT NULL DEFAULT 'Active',
   `telephone` varchar(70) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `partenaire_avec` int(11) DEFAULT NULL,
   `date_enregistrement` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -63,10 +64,12 @@ CREATE TABLE `membres` (
 -- Déchargement des données de la table `membres`
 --
 
-INSERT INTO `membres` (`id`, `nom`, `prenom`, `sexe`, `date_naissance`, `lieu_naissance`, `profession`, `statut_membre`, `telephone`, `email`, `date_enregistrement`) VALUES
-(1, 'NDABO', 'Sammy', 'Masculin', '1999-11-06', 'Goma', 'Informaticien', 'Actif', '(243)973-886-132', 'ndabosam084@gmail.com', '2023-06-23'),
-(2, 'BERNARD', 'Mali', 'Masculin', '2023-06-23', 'Goma', 'Professeur', 'Actif', '(243)   -   -   ', 'bernardmali@gmail.com', '2023-06-24'),
-(3, 'GALIEN', 'Makutano', 'Masculin', '2023-06-24', 'Bukavu', 'Commercant', 'Actif', '(243)   -   -   ', 'ndabosam084@gmail.com', '2023-06-25');
+INSERT INTO `membres` (`id`, `nom`, `prenom`, `sexe`, `date_naissance`, `lieu_naissance`, `profession`, `statut_membre`, `telephone`, `email`, `partenaire_avec`, `date_enregistrement`) VALUES
+(1, 'NDABO', 'Sammy', 'Masculin', '1999-11-06', 'Goma', 'Informaticien', 'Actif', '(243)973-886-132', 'ndabosam084@gmail.com', NULL, '2023-06-23'),
+(2, 'BERNARD', 'Mali', 'Masculin', '2023-06-23', 'Goma', 'Professeur', 'Actif', '(243)   -   -   ', 'bernardmali@gmail.com', NULL, '2023-06-24'),
+(3, 'GALIEN', 'Makutano', 'Masculin', '2023-06-24', 'Bukavu', 'Commercant', 'Actif', '(243)   -   -   ', 'ndabosam084@gmail.com', NULL, '2023-06-25'),
+(4, 'JEAN BAPTISTE', 'Mugisha', 'Masculin', '2023-07-08', 'Goma', 'Docteur', 'Actif', '(243)   -   -   ', 'ndabosam084@gmail.com', NULL, '2023-07-15'),
+(5, 'MARIE', 'Magdaleine', 'Feminin', '2023-07-08', 'Goma', '-', 'Actif', '(243)   -   -   ', 'ndabosam084@gmail.com', 4, '2023-07-15');
 
 -- --------------------------------------------------------
 
@@ -120,7 +123,10 @@ INSERT INTO `transactions_table` (`id`, `libelle`, `montant`, `personne`, `perso
 (8, 'Débit', 100, '2 BERNARD Mali', 2, 'Ordinaire', NULL, 2, 2, '2023-06-26 09:15:46'),
 (9, 'Débit', 100, '1 NDABO Sammy', 1, 'Ordinaire', NULL, 2, 2, '2023-06-26 09:20:06'),
 (10, 'Débit', 300, '2 BERNARD Mali', 2, 'Ordinaire', NULL, 6, 6, '2023-06-26 16:09:35'),
-(11, 'Crédit', 200, '1 NDABO Sammy', 1, '-- --', NULL, 0, 0, '2023-06-26 16:10:04');
+(11, 'Crédit', 200, '1 NDABO Sammy', 1, '-- --', NULL, 0, 0, '2023-06-26 16:10:04'),
+(12, 'Débit', 400, '3 GALIEN Makutano', 3, 'Ordinaire', NULL, 8, 8, '2023-07-03 12:02:18'),
+(13, 'Débit', 300, '2 BERNARD Mali', 2, 'Ordinaire', NULL, 6, 6, '2023-07-03 17:37:25'),
+(14, 'Crédit', 300, '2 BERNARD Mali', 2, '-- --', NULL, 0, 0, '2023-07-03 17:38:13');
 
 --
 -- Déclencheurs `transactions_table`
@@ -181,7 +187,7 @@ ALTER TABLE `transactions_table`
 -- AUTO_INCREMENT pour la table `membres`
 --
 ALTER TABLE `membres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `settings`
@@ -193,7 +199,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT pour la table `transactions_table`
 --
 ALTER TABLE `transactions_table`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

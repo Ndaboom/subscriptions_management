@@ -624,7 +624,7 @@ public final class TransactionsHome extends javax.swing.JInternalFrame {
 		 try{
 			 jCMembres.removeAllItems();
 	         java.sql.Statement stmt1= maConnexion.ObtenirConnexion().createStatement();
-	         java.sql.ResultSet resultat= stmt1.executeQuery("SELECT * FROM membres");
+	         java.sql.ResultSet resultat= stmt1.executeQuery("SELECT * FROM membres WHERE partenaire_avec IS NULL");
 	         
 	         while(resultat.next()){                     
 	        	 jCMembres.addItem(resultat.getString("id")+" "+resultat.getString("nom")+" "+resultat.getString("prenom")); 
